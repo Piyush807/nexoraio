@@ -4,6 +4,7 @@ import io.nexora.backend.auth.Account;
 import io.nexora.backend.auth.dto.request.RegisterRequest;
 import io.nexora.backend.auth.dto.response.RegisterResponse;
 import io.nexora.backend.auth.enums.Role;
+import io.nexora.backend.auth.exception.EmailAlreadyExistsException;
 import io.nexora.backend.auth.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +19,7 @@ public class AuthService {
     public RegisterResponse register(RegisterRequest request){
 
         if(accountRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException(request.getEmail());
         }
 
         Account account = Account.builder()
