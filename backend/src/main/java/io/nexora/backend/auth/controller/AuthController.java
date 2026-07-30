@@ -1,6 +1,8 @@
 package io.nexora.backend.auth.controller;
 
+import io.nexora.backend.auth.dto.request.LoginRequest;
 import io.nexora.backend.auth.dto.request.RegisterRequest;
+import io.nexora.backend.auth.dto.response.LoginResponse;
 import io.nexora.backend.auth.dto.response.RegisterResponse;
 import io.nexora.backend.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -21,6 +23,13 @@ public class AuthController {
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest registerRequest) {
         RegisterResponse registerResponse = authService.register(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(registerResponse.getMessage());
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(
+            @Valid @RequestBody LoginRequest request) {
+
+        return ResponseEntity.ok(authService.login(request));
     }
 
 }

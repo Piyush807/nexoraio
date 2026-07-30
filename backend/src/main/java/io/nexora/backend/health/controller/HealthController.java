@@ -2,6 +2,7 @@ package io.nexora.backend.health.controller;
 
 import io.nexora.backend.health.dto.HealthResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,5 +21,10 @@ public class HealthController {
         );
     }
 
+    @GetMapping("/secure")
+    public String me(Authentication authentication) {
+        return authentication.getName();
+
+    }
 
 }
