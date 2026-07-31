@@ -42,7 +42,7 @@ public class WorkspaceController {
         return workspaceService.updateWorkspace(workspaceId, request, authentication.getName());
     }
 
-    @DeleteMapping("{/workspaceId}")
+    @DeleteMapping("/{workspaceId}")
     public ResponseEntity<String> deleteWorkspace(@PathVariable("workspaceId") UUID workspaceId, Authentication authentication) {
          workspaceService.deleteWorkspace(workspaceId, authentication.getName());
          return ResponseEntity.ok("Workspace deleted");
