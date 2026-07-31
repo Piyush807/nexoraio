@@ -10,6 +10,8 @@ import io.nexora.backend.workspace.repository.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class WorkspaceService {
@@ -37,6 +39,21 @@ public class WorkspaceService {
                 savedWorkspace.getCreatedAt()
         );
 
+    }
+
+    public List<WorkspaceResponse> getMyWorkspaces(String email){
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
+
+        List<Workspace> workspaces = workspaceRepository.findAllByOwnerIdAndDeletedFalse(account.getId());
+
+        return workspaces.stream()
+                .map(workspace -> new WorkspaceResponse(workspace.getId(),
+                        workspace.getName(),
+                        workspace.getDescription(),
+                        workspace.getOwner().getEmail(),
+                        workspace.getCreatedAt()))
+                .toList();
     }
 
 }
