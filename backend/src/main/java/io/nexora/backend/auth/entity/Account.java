@@ -1,4 +1,4 @@
-package io.nexora.backend.auth;
+package io.nexora.backend.auth.entity;
 
 import io.nexora.backend.auth.enums.Role;
 import jakarta.persistence.*;
