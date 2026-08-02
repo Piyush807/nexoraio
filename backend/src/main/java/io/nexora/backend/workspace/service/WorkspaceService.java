@@ -27,7 +27,7 @@ public class WorkspaceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Account with email " + email + " not found"));
     }
 
-    private Workspace getAuthorizedWorkspace(UUID workspaceId, String email) {
+    public Workspace getAuthorizedWorkspace(UUID workspaceId, String email) {
         Account account = getAccountByEmail(email);
         Optional<Workspace> workspaceOptional = workspaceRepository.findByIdAndOwnerIdAndDeletedFalse(workspaceId , account.getId());
         Workspace workspace = workspaceOptional.orElseThrow(
