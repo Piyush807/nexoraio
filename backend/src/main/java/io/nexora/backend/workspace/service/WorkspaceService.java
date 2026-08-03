@@ -7,6 +7,7 @@ import io.nexora.backend.workspace.dto.request.CreateWorkspaceRequest;
 import io.nexora.backend.workspace.dto.request.UpdateWorkspaceRequest;
 import io.nexora.backend.workspace.dto.response.WorkspaceResponse;
 import io.nexora.backend.workspace.entity.Workspace;
+import io.nexora.backend.workspace.mapper.WorkspaceMapper;
 import io.nexora.backend.workspace.repository.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final AccountRepository accountRepository;
+    private final WorkspaceMapper workspaceMapper;
 
     private Account getAccountByEmail(String email) {
         return accountRepository.findByEmail(email)
@@ -48,13 +50,7 @@ public class WorkspaceService {
 
         Workspace savedWorkspace = workspaceRepository.save(workspace);
 
-        return new WorkspaceResponse(
-                savedWorkspace.getId(),
-                savedWorkspace.getName(),
-                savedWorkspace.getDescription(),
-                savedWorkspace.getOwner().getEmail(),
-                savedWorkspace.getCreatedAt()
-        );
+        return workspaceMapper.toResponse(savedWorkspace);
 
     }
 
@@ -64,11 +60,7 @@ public class WorkspaceService {
         List<Workspace> workspaces = workspaceRepository.findAllByOwnerIdAndDeletedFalse(account.getId());
 
         return workspaces.stream()
-                .map(workspace -> new WorkspaceResponse(workspace.getId(),
-                        workspace.getName(),
-                        workspace.getDescription(),
-                        workspace.getOwner().getEmail(),
-                        workspace.getCreatedAt()))
+                .map(workspace ->  workspaceMapper.toResponse(workspace))
                 .toList();
     }
 
@@ -76,12 +68,7 @@ public class WorkspaceService {
 
         Workspace workspace = getAuthorizedWorkspace(workspaceId, email);
 
-        return new WorkspaceResponse(
-                workspace.getId(),
-                workspace.getName(),
-                workspace.getDescription(),
-                workspace.getOwner().getEmail(),
-                workspace.getCreatedAt());
+        return workspaceMapper.toResponse(workspace);
     }
 
     public WorkspaceResponse updateWorkspace(UUID workspaceId, UpdateWorkspaceRequest request, String email){
