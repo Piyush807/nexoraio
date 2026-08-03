@@ -2,7 +2,9 @@ package io.nexora.backend.project.mapper;
 
 import io.nexora.backend.project.dto.response.ProjectResponse;
 import io.nexora.backend.project.entity.Project;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ProjectMapper {
 
     public ProjectResponse toResponse(Project project) {

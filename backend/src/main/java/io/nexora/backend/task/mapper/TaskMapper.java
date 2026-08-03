@@ -2,7 +2,9 @@ package io.nexora.backend.task.mapper;
 
 import io.nexora.backend.task.dto.response.TaskResponse;
 import io.nexora.backend.task.entity.Task;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TaskMapper {
 
     public TaskResponse toResponse(Task task){
