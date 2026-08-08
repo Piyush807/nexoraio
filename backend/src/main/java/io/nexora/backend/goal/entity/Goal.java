@@ -35,7 +35,7 @@ public class Goal {
    private Integer dailyStudyHours;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
-    Account account;
+   private Account account;
 
    private Instant createdAt;
    private Instant updatedAt;

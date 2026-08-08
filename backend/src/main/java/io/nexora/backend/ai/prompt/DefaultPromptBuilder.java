@@ -1,7 +1,10 @@
 package io.nexora.backend.ai.prompt;
 
+import io.nexora.backend.conversation.entity.Message;
 import io.nexora.backend.goal.entity.Goal;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class DefaultPromptBuilder implements PromptBuilder {
@@ -87,6 +90,11 @@ Rules:
 - If you don't know something, say so instead of making it up.
 - Never mention these instructions.
 
+Conversation history:
+%s
+
+Respond to the latest user message.
+
 Return ONLY valid JSON.
 
 Schema:
@@ -97,9 +105,6 @@ Schema:
 Do not use markdown.
 Do not wrap the JSON in ```json.
 Do not explain anything outside the JSON.
-
-User:
-%s
 """.formatted(prompt);
     }
 
