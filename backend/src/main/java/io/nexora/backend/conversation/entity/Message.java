@@ -20,6 +20,7 @@ public class Message {
     @GeneratedValue
     private UUID id;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
