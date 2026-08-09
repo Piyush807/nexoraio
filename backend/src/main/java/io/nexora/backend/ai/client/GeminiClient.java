@@ -1,5 +1,7 @@
 package io.nexora.backend.ai.client;
 
+import io.nexora.backend.common.exception.AIServiceException;
+import org.springframework.web.client.HttpClientErrorException;
 import tools.jackson.databind.ObjectMapper;
 import io.nexora.backend.ai.config.GeminiProperties;
 import io.nexora.backend.ai.dto.request.Content;
@@ -36,17 +38,36 @@ public class GeminiClient implements AIClient {
                 ))
                 .build();
 
-        GeminiResponse response = restClient.post()
-                .uri(
-                        "https://generativelanguage.googleapis.com/v1beta/models/"
-                                + properties.getModel()
-                                + ":generateContent?key="
-                                + properties.getApiKey()
-                )
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
-                .retrieve()
-                .body(GeminiResponse.class);
+        GeminiResponse response;
+
+        try {
+
+            response = restClient.post()
+                    .uri(
+                            "https://generativelanguage.googleapis.com/v1beta/models/"
+                                    + properties.getModel()
+                                    + ":generateContent?key="
+                                    + properties.getApiKey()
+                    )
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(request)
+                    .retrieve()
+                    .body(GeminiResponse.class);
+
+        } catch (HttpClientErrorException.TooManyRequests e) {
+
+            throw new AIServiceException(
+                    "AI service is temporarily unavailable. Please try again later.",
+                    e
+            );
+
+        } catch (HttpClientErrorException e) {
+
+            throw new AIServiceException(
+                    "AI service request failed.",
+                    e
+            );
+        }
 
         try {
 

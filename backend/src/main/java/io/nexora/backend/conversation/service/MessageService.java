@@ -31,15 +31,27 @@ public class MessageService {
                 .findByIdAndAccountId(conversationId, accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
 
-        Message message = Message.builder()
+        Message userMessage = Message.builder()
                 .conversation(conversation)
                 .role(MessageRole.USER)
                 .content(request.getContent())
                 .build();
 
-        Message savedMessage = messageRepository.save(message);
+        messageRepository.save(userMessage);
 
-        return mapToResponse(savedMessage);
+        List<Message> messages = messageRepository.findByConversationIdOrderByCreatedAtAsc(conversationId);
+
+        ChatResponse aiResponse = aiService.chat(messages);
+
+        Message assistantMessage = Message.builder()
+                .conversation(conversation)
+                .role(MessageRole.ASSISTANT)
+                .content(aiResponse.getReply())
+                .build();
+
+        Message savedAssistantMessage = messageRepository.save(assistantMessage);
+
+        return mapToResponse(savedAssistantMessage);
     }
 
     public List<MessageResponse> getMessages(UUID conversationId, UUID accountId) {
