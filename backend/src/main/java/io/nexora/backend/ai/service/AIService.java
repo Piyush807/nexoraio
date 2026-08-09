@@ -9,4 +9,6 @@ public interface AIService {
 
     ChatResponse chat(ChatRequest request);
 
+    ChatResponse chat(List<Message> messages);
+
 }

@@ -23,4 +23,12 @@ public class AIServiceImpl implements AIService {
 
         return aiClient.generate(prompt, ChatResponse.class);
     }
+
+    @Override
+    public ChatResponse chat(List<Message> messages) {
+
+        String prompt = promptBuilder.buildChatPrompt(messages);
+
+        return aiClient.generate(prompt, ChatResponse.class);
+    }
 }

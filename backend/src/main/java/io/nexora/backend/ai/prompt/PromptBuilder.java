@@ -10,4 +10,6 @@ public interface PromptBuilder {
     String buildRoadmapPrompt(Goal goal);
 
     String buildChatPrompt(String prompt);
+
+    String buildChatPrompt(List<Message> messages);
 }
