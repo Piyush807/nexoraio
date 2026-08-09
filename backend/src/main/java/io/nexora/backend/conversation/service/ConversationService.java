@@ -1,6 +1,7 @@
 package io.nexora.backend.conversation.service;
 
 import io.nexora.backend.auth.entity.Account;
+import io.nexora.backend.common.exception.ResourceNotFoundException;
 import io.nexora.backend.conversation.dto.request.CreateConversationRequest;
 import io.nexora.backend.conversation.dto.response.ConversationResponse;
 import io.nexora.backend.conversation.entity.Conversation;
@@ -62,7 +63,7 @@ public class ConversationService {
     public ConversationResponse getConversation(UUID conversationId, UUID accountId) {
 
        Conversation conversation = conversationRepository.findByIdAndAccountId(conversationId, accountId)
-                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
        return toResponse(conversation);
     }
 
@@ -70,7 +71,7 @@ public class ConversationService {
 
         Conversation conversation = conversationRepository
                 .findByIdAndAccountId(conversationId, accountId)
-                .orElseThrow(() -> new RuntimeException("Conversation not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
 
         conversationRepository.delete(conversation);
     }
