@@ -11,8 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateConversationRequest {
-
     private UUID goalId;
-    @NotBlank
     private String title;
+
 }

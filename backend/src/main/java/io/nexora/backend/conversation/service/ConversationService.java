@@ -36,7 +36,9 @@ public class ConversationService {
        account.setId(accountId);
        Conversation conversation = Conversation.builder()
                .account(account)
-               .title(request.getTitle())
+               .title(request.getTitle() != null && !request.getTitle().isBlank()
+                       ? request.getTitle()
+                       : "New Conversation")
                .createdAt(Instant.now())
                .updatedAt(Instant.now())
                .build();
