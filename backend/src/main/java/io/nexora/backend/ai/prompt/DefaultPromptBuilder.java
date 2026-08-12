@@ -13,60 +13,65 @@ public class DefaultPromptBuilder implements PromptBuilder {
     public String buildRoadmapPrompt(Goal goal) {
 
         return """
-You are an expert career mentor.
+        You are an expert career and learning roadmap planner.
 
-Your task is to generate a personalized learning roadmap.
+        Generate a personalized learning roadmap based on the user's goal.
 
-Goal:
-%s
+        Goal:
+        %s
 
-Current Level:
-%s
+        Current Level:
+        %s
 
-Daily Study Hours:
-%d
+        Daily Study Hours:
+        %s
 
-Target Date:
-%s
+        Target Date:
+        %s
 
-Return ONLY valid JSON.
+        Return ONLY valid JSON.
 
-Schema:
+        The JSON MUST follow this structure:
 
-{
-  "skills":[
-    {
-      "name":"Java"
-    }
-  ],
+        {
+          "skills": [
+            {
+              "name": "skill name"
+            }
+          ],
+          "milestones": [
+            {
+              "title": "milestone title",
+              "description": "milestone description",
+              "estimatedDays": 7,
+              "tasks": [
+                "task title"
+              ]
+            }
+          ]
+        }
 
-  "milestones":[
-    {
-      "title":"Java Fundamentals",
-      "description":"Learn Java basics",
-      "estimatedDays":14,
-      "tasks":[
-        "Variables",
-        "Loops",
-        "Methods"
-      ]
-    }
-  ]
-}
-
-Do not return markdown.
-
-Do not explain anything.
-
-Return JSON only.
-"""
+        Rules:
+        - Determine the required skills from the user's goal.
+        - Do not assume or hardcode any specific technology or skill.
+        - Adapt the roadmap to the user's current level.
+        - Consider the user's available daily study time.
+        - Consider the target date when estimating milestone durations.
+        - Organize milestones in a logical learning sequence.
+        - Every milestone must contain relevant tasks.
+        - Every task must have a title and description.
+        - estimatedDays must be a positive integer.
+        - Return JSON only.
+        - Do not use Markdown.
+        - Do not wrap the JSON in ```json.
+        - Do not include explanations outside the JSON.
+        """
                 .formatted(
                         goal.getTitle(),
                         goal.getCurrentLevel(),
-                        goal.getDailyStudyHours(),
+                        String.valueOf(goal.getDailyStudyHours()),
                         goal.getTargetDate()
                 );
-
     }
 
     @Override

@@ -1,6 +1,5 @@
-package io.nexora.backend.skill.entity;
+package io.nexora.backend.roadmap.entity;
 
-import io.nexora.backend.milestone.entity.Milestone;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +20,8 @@ public class Skill {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "milestone_id", nullable = false)
-    private Milestone milestone;
+    @JoinColumn(name = "roadmap_id", nullable = false)
+    private Roadmap roadmap;
 
     @Column(nullable = false)
     private String name;
@@ -32,5 +31,6 @@ public class Skill {
 
     private Integer progressPercentage;
 
-    private boolean completed;
+    @Builder.Default
+    private boolean completed = false;
 }

@@ -1,15 +1,14 @@
-package io.nexora.backend.skill.repository;
+package io.nexora.backend.roadmap.repository;
 
-import io.nexora.backend.skill.entity.Skill;
+import io.nexora.backend.roadmap.entity.Skill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+
 @Repository
 public interface SkillRepository extends JpaRepository<Skill, UUID> {
 
-    List<Skill> findAllByMilestoneId(UUID milestoneId);
-
+    List<Skill> findAllByRoadmapId(UUID roadmapId);
 }

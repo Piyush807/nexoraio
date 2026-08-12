@@ -1,12 +1,13 @@
-package io.nexora.backend.milestone.entity;
+package io.nexora.backend.roadmap.entity;
 
-import io.nexora.backend.roadmap.entity.Roadmap;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -34,5 +35,13 @@ public class Milestone {
 
     private Integer estimatedDays;
 
-    private boolean completed;
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(name = "roadmap_milestone_tasks", joinColumns = @JoinColumn(name = "milestone_id"))
+    @OrderColumn(name = "task_order")
+    @Column(name = "task", columnDefinition = "TEXT")
+    private List<String> tasks = new ArrayList<>();
+
+    @Builder.Default
+    private boolean completed = false;
 }
