@@ -2,6 +2,7 @@ package io.nexora.backend.ai.client;
 
 import io.nexora.backend.ai.dto.request.OllamaRequest;
 import io.nexora.backend.ai.dto.response.OllamaResponse;
+import io.nexora.backend.ai.dto.response.ChatResponse;
 import io.nexora.backend.common.exception.AIServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -48,8 +49,26 @@ public class OllamaClient implements AIClient {
 
         try {
 
+            String rawResponse = response.getResponse();
+
+            if (responseType.equals(String.class)) {
+                return responseType.cast(extractJson(rawResponse));
+            }
+
+            String jsonResponse = extractJson(rawResponse);
+
+            if (responseType.equals(ChatResponse.class)) {
+                try {
+                    return responseType.cast(objectMapper.readValue(jsonResponse, responseType));
+                } catch (Exception ignored) {
+                    return responseType.cast(ChatResponse.builder()
+                            .reply(extractPlainText(rawResponse))
+                            .build());
+                }
+            }
+
             return objectMapper.readValue(
-                    response.getResponse(),
+                    jsonResponse,
                     responseType
             );
 
@@ -60,5 +79,47 @@ public class OllamaClient implements AIClient {
                     e
             );
         }
+    }
+
+    private String extractJson(String rawResponse) {
+
+        if (rawResponse == null || rawResponse.isBlank()) {
+            throw new AIServiceException("AI returned an empty response.");
+        }
+
+        String trimmed = rawResponse.trim();
+
+        if (trimmed.startsWith("```")) {
+            int firstFenceEnd = trimmed.indexOf('\n');
+            int lastFenceStart = trimmed.lastIndexOf("```");
+            if (firstFenceEnd >= 0 && lastFenceStart > firstFenceEnd) {
+                return trimmed.substring(firstFenceEnd + 1, lastFenceStart).trim();
+            }
+        }
+
+        int start = trimmed.indexOf('{');
+        int end = trimmed.lastIndexOf('}');
+
+        if (start >= 0 && end > start) {
+            return trimmed.substring(start, end + 1);
+        }
+
+        return trimmed;
+    }
+
+    private String extractPlainText(String rawResponse) {
+        String cleaned = extractJson(rawResponse);
+
+        if (cleaned.startsWith("{") && cleaned.contains("\"reply\"")) {
+            int colonIndex = cleaned.indexOf(':');
+            if (colonIndex >= 0) {
+                String value = cleaned.substring(colonIndex + 1).trim();
+                if (value.startsWith("\"") && value.endsWith("\"")) {
+                    return value.substring(1, value.length() - 1);
+                }
+            }
+        }
+
+        return cleaned;
     }
 }

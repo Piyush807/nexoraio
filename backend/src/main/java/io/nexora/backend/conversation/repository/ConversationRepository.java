@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface ConversationRepository extends JpaRepository<Conversation, UUID> {
     List<Conversation> findByAccountId(UUID accountId);
     Optional<Conversation> findByIdAndAccountId(UUID conversationId, UUID accountId);
+    Optional<Conversation> findTopByGoalIdAndAccountIdOrderByUpdatedAtDesc(UUID goalId, UUID accountId);
 }
