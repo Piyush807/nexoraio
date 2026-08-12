@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -71,8 +72,8 @@ public class RoadmapService {
 
         List<Milestone> milestones = aiResponse.getMilestones() == null
                 ? List.of()
-                : aiResponse.getMilestones().stream()
-                .map(milestone -> toMilestoneEntity(savedRoadmap, milestone))
+                : IntStream.range(0, aiResponse.getMilestones().size())
+                .mapToObj(index -> toMilestoneEntity(savedRoadmap, aiResponse.getMilestones().get(index), index + 1))
                 .toList();
 
         if (!skills.isEmpty()) {
@@ -119,12 +120,12 @@ public class RoadmapService {
                 .build();
     }
 
-    private Milestone toMilestoneEntity(Roadmap roadmap, MilestoneDTO milestoneDTO) {
+    private Milestone toMilestoneEntity(Roadmap roadmap, MilestoneDTO milestoneDTO, Integer orderIndex) {
         return Milestone.builder()
                 .roadmap(roadmap)
                 .title(milestoneDTO.getTitle())
                 .description(milestoneDTO.getDescription())
-                .orderIndex(null)
+                .orderIndex(orderIndex)
                 .estimatedDays(milestoneDTO.getEstimatedDays())
                 .tasks(milestoneDTO.getTasks() == null ? List.of() : milestoneDTO.getTasks())
                 .completed(false)

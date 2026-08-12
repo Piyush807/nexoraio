@@ -1,7 +1,9 @@
 package io.nexora.backend.progress.controller;
 
 import io.nexora.backend.progress.dto.request.CreateProgressEntryRequest;
+import io.nexora.backend.progress.dto.request.CreateProgressTaskRequest;
 import io.nexora.backend.progress.dto.response.ProgressEntryResponse;
+import io.nexora.backend.progress.dto.response.ProgressTaskResponse;
 import io.nexora.backend.progress.service.ProgressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +40,22 @@ public class ProgressController {
             Authentication authentication) {
 
         return ResponseEntity.ok(progressService.getProgress(goalId, authentication.getName()));
+    }
+
+    @PostMapping("/tasks")
+    public ResponseEntity<ProgressTaskResponse> completeTask(
+            @PathVariable UUID goalId,
+            @RequestBody CreateProgressTaskRequest request,
+            Authentication authentication) {
+
+        return ResponseEntity.ok(progressService.completeTask(goalId, authentication.getName(), request));
+    }
+
+    @GetMapping("/tasks")
+    public ResponseEntity<List<ProgressTaskResponse>> getCompletedTasks(
+            @PathVariable UUID goalId,
+            Authentication authentication) {
+
+        return ResponseEntity.ok(progressService.getCompletedTasks(goalId, authentication.getName()));
     }
 }
