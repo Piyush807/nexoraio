@@ -17,6 +17,11 @@ public interface PromptBuilder {
 
     String buildChatPrompt(List<Message> messages);
 
+    // Goal- and roadmap-aware chat prompt, used by MessageService so regular
+    // conversations linked to a goal know that goal's roadmap, not just raw
+    // message history.
+    String buildChatPrompt(List<Message> messages, Goal goal, RoadmapResponse roadmap);
+
     String buildDailyCoachPrompt(Goal goal,
                                  RoadmapResponse roadmap,
                                  ProgressEntry latestProgress,

@@ -1,8 +1,8 @@
 package io.nexora.backend.conversation.service;
 
+import io.nexora.backend.common.exception.ResourceNotFoundException;
 import io.nexora.backend.ai.dto.response.ChatResponse;
 import io.nexora.backend.ai.service.AIService;
-import io.nexora.backend.common.exception.ResourceNotFoundException;
 import io.nexora.backend.conversation.dto.request.CreateMessageRequest;
 import io.nexora.backend.conversation.dto.response.MessageResponse;
 import io.nexora.backend.conversation.entity.Conversation;
@@ -10,6 +10,9 @@ import io.nexora.backend.conversation.entity.Message;
 import io.nexora.backend.conversation.enums.MessageRole;
 import io.nexora.backend.conversation.repository.ConversationRepository;
 import io.nexora.backend.conversation.repository.MessageRepository;
+import io.nexora.backend.goal.entity.Goal;
+import io.nexora.backend.roadmap.dto.response.RoadmapResponse;
+import io.nexora.backend.roadmap.service.RoadmapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +26,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ConversationRepository conversationRepository;
     private final AIService aiService;
-
-
+    private final RoadmapService roadmapService;
 
     public MessageResponse createMessage(UUID conversationId, UUID accountId, CreateMessageRequest request) {
         Conversation conversation = conversationRepository
@@ -41,7 +43,12 @@ public class MessageService {
 
         List<Message> messages = messageRepository.findByConversationIdOrderByCreatedAtAsc(conversationId);
 
-        ChatResponse aiResponse = aiService.chat(messages);
+        Goal goal = conversation.getGoal();
+        RoadmapResponse roadmap = goal != null
+                ? roadmapService.getRoadmapByGoalIdOrNull(goal.getId())
+                : null;
+
+        ChatResponse aiResponse = aiService.chat(messages, goal, roadmap);
 
         Message assistantMessage = Message.builder()
                 .conversation(conversation)

@@ -98,6 +98,20 @@ public class RoadmapService {
         return toResponse(roadmap);
     }
 
+    /**
+     * Looks up a roadmap by goal id without an ownership check, for callers
+     * (e.g. MessageService) that have already authorized the caller via a
+     * different owning entity (the conversation). Returns null instead of
+     * throwing when no roadmap exists yet, since "no roadmap" is a normal
+     * state for AI chat context, not an error.
+     */
+    @Transactional(readOnly = true)
+    public RoadmapResponse getRoadmapByGoalIdOrNull(UUID goalId) {
+        return roadmapRepository.findByGoalId(goalId)
+                .map(this::toResponse)
+                .orElse(null);
+    }
+
     private Goal getAuthorizedGoal(UUID goalId, String email) {
 
         Goal goal = goalRepository.findByIdAndDeletedFalse(goalId)
