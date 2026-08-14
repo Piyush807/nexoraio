@@ -13,6 +13,7 @@ import io.nexora.backend.progress.entity.ProgressEntry;
 import io.nexora.backend.progress.entity.ProgressTaskEntry;
 import io.nexora.backend.progress.repository.ProgressEntryRepository;
 import io.nexora.backend.progress.repository.ProgressTaskEntryRepository;
+import io.nexora.backend.roadmap.entity.Milestone;
 import io.nexora.backend.roadmap.entity.Roadmap;
 import io.nexora.backend.roadmap.repository.RoadmapRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class ProgressService {
                 .entryDate(request.getEntryDate() != null ? request.getEntryDate() : LocalDate.now())
                 .note(request.getNote())
                 .completedMilestones(request.getCompletedMilestones())
-                .completedTasks(request.getCompletedTasks())
+                .completedTasks(Math.toIntExact(progressTaskEntryRepository.countByGoalIdAndCompletedTrue(goalId)))
                 .growthScore(request.getGrowthScore())
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
@@ -78,8 +79,21 @@ public class ProgressService {
         Roadmap roadmap = roadmapRepository.findByGoalId(goalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Roadmap not found"));
 
+        Milestone milestone = roadmap.getMilestones().stream()
+                .filter(m -> m.getTitle().equals(request.getMilestoneTitle()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Milestone not found"));
+
+        if (!milestone.getTasks().contains(request.getTaskTitle())) {
+            throw new ResourceNotFoundException("Task not found");
+        }
+
         ProgressTaskEntry taskEntry = progressTaskEntryRepository
-                .findByGoalIdAndMilestoneTitleAndTaskTitle(goalId, request.getMilestoneTitle(), request.getTaskTitle())
+                .findByGoalIdAndMilestoneTitleAndTaskTitle(
+                        goalId,
+                        request.getMilestoneTitle(),
+                        request.getTaskTitle()
+                )
                 .orElseGet(ProgressTaskEntry::new);
 
         taskEntry.setAccount(account);

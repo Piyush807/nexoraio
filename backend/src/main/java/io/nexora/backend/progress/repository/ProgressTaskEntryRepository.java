@@ -14,4 +14,6 @@ public interface ProgressTaskEntryRepository extends JpaRepository<ProgressTaskE
     List<ProgressTaskEntry> findAllByGoalIdOrderByCompletedAtDesc(UUID goalId);
 
     Optional<ProgressTaskEntry> findByGoalIdAndMilestoneTitleAndTaskTitle(UUID goalId, String milestoneTitle, String taskTitle);
+
+    long countByGoalIdAndCompletedTrue(UUID goalId);
 }
