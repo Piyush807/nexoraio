@@ -1,20 +1,29 @@
 # ADR-001
 
-## Package Structure
+## Package structure
 
 Decision:
 Feature-first architecture.
 
 Reason:
 Keeps related code together.
-Improves maintainability.
-Scales better than package-by-layer.
+Makes the goal -> roadmap -> progress flow easy to follow.
+Scales better than a pure package-by-layer layout.
 
 Status:
 Accepted
 
-auth/
-Account
+Current core domains:
 
-profile/
-UserProfile
+- auth
+- goal
+- roadmap
+- progress
+- conversation
+- ai
+
+Legacy domains removed:
+
+- workspace
+- task
+- project

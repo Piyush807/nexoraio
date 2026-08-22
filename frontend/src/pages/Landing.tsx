@@ -99,7 +99,7 @@ export default function Landing() {
       <footer className="border-t border-base-700 px-4 py-8 md:px-6">
         <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-3 text-xs text-ink-700 sm:flex-row">
           <span>© {new Date().getFullYear()} Nexora</span>
-          <span className="font-mono">Built with Spring Boot, PostgreSQL, and Gemini</span>
+              <span className="font-mono">Built with Spring Boot, PostgreSQL, and Gemini</span>
         </div>
       </footer>
     </div>
