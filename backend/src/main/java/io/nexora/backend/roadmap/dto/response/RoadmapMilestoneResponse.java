@@ -21,4 +21,5 @@ public class RoadmapMilestoneResponse {
     private Integer estimatedDays;
     private List<String> tasks;
     private boolean completed;
+    private boolean manualOverride;
 }

@@ -1,5 +1,3 @@
-// Matches io.nexora.backend.progress.* DTOs exactly.
-
 export interface CreateProgressEntryRequest {
   entryDate: string
   note?: string
@@ -7,7 +5,6 @@ export interface CreateProgressEntryRequest {
   completedTasks?: number
   growthScore?: number
 }
-
 export interface ProgressEntryResponse {
   id: string
   goalId: string
@@ -20,12 +17,7 @@ export interface ProgressEntryResponse {
   createdAt: string
   updatedAt: string
 }
-
-export interface CreateProgressTaskRequest {
-  milestoneTitle: string
-  taskTitle: string
-}
-
+export interface CreateProgressTaskRequest { milestoneTitle: string; taskTitle: string }
 export interface ProgressTaskResponse {
   id: string
   goalId: string
@@ -37,8 +29,11 @@ export interface ProgressTaskResponse {
   createdAt: string
   updatedAt: string
 }
+export interface ChatResponse { reply: string }
 
-// GET /api/v1/goals/{goalId}/coach/daily -> ChatResponse { reply }
-export interface ChatResponse {
-  reply: string
+// GET /api/v1/progress/streak (account-scoped, not goal-scoped)
+export interface StreakResponse {
+  currentStreakDays: number
+  longestStreakDays: number
+  lastEntryDate: string | null
 }

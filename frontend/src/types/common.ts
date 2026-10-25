@@ -3,7 +3,6 @@ export interface ApiErrorShape {
   message: string
   details?: string
 }
-
 export class ApiError extends Error {
   status?: number
   details?: string

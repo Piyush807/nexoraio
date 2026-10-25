@@ -30,11 +30,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ push }}>
       {children}
-      <div className="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 w-[min(360px,calc(100vw-2.5rem))]">
+      <div className="fixed bottom-5 right-5 z-[100] flex w-[min(380px,calc(100vw-2.5rem))] flex-col gap-2" aria-live="polite">
         {toasts.map((t) => (
           <div
             key={t.id}
-            role="status"
+            role={t.kind === 'error' ? 'alert' : 'status'}
             className={cn(
               'animate-fadeUp rounded-lg border px-4 py-3 text-sm shadow-lg backdrop-blur-md',
               t.kind === 'success' && 'bg-signal-mint/10 border-signal-mint/30 text-signal-mint',

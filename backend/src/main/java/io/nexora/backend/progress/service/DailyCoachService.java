@@ -21,6 +21,8 @@ import io.nexora.backend.roadmap.entity.Roadmap;
 import io.nexora.backend.roadmap.dto.response.RoadmapResponse;
 import io.nexora.backend.roadmap.repository.RoadmapRepository;
 import io.nexora.backend.roadmap.service.RoadmapService;
+import io.nexora.backend.memory.dto.response.GrowthMemoryResponse;
+import io.nexora.backend.memory.service.GrowthMemoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,7 @@ public class DailyCoachService {
     private final DailyCoachEntryRepository dailyCoachEntryRepository;
     private final PromptBuilder promptBuilder;
     private final AIClient aiClient;
+    private final GrowthMemoryService growthMemoryService;
 
     @Transactional
     public ChatResponse getDailyCoach(UUID goalId, String email) {
@@ -67,6 +70,7 @@ public class DailyCoachService {
         ProgressEntry latestProgress = progressEntryRepository.findTopByGoalIdOrderByEntryDateDesc(goalId).orElse(null);
         List<ProgressTaskEntry> completedTasks = progressTaskEntryRepository.findAllByGoalIdOrderByCompletedAtDesc(goalId);
         List<Message> recentMessages = getRecentMessages(conversation);
+        GrowthMemoryResponse memory = growthMemoryService.getOrRefresh(email);
 
         String prompt = promptBuilder.buildDailyCoachPrompt(
                 goal,
@@ -74,7 +78,8 @@ public class DailyCoachService {
                 latestProgress,
                 completedTasks,
                 recentMessages,
-                today
+                today,
+                memory
         );
 
         String reply = aiClient.generate(prompt, String.class);
@@ -131,6 +136,6 @@ public class DailyCoachService {
             return List.of();
         }
 
-        return messageRepository.findByConversationIdOrderByCreatedAtAsc(conversation.getId());
+        return messageRepository.findTop40ByConversationIdOrderByCreatedAtDesc(conversation.getId()).stream().sorted(java.util.Comparator.comparing(Message::getCreatedAt)).toList();
     }
 }

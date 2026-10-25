@@ -7,17 +7,20 @@ import io.nexora.backend.conversation.dto.response.ConversationResponse;
 import io.nexora.backend.conversation.entity.Conversation;
 import io.nexora.backend.conversation.repository.ConversationRepository;
 import io.nexora.backend.goal.entity.Goal;
+import io.nexora.backend.goal.repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ConversationService {
     private final ConversationRepository conversationRepository;
+    private final GoalRepository goalRepository;
 
     private ConversationResponse toResponse(Conversation conversation) {
         return ConversationResponse.builder()
@@ -44,8 +47,13 @@ public class ConversationService {
                .build();
 
        if (request.getGoalId() != null) {
-           Goal goal = new Goal();
-           goal.setId(request.getGoalId());
+           Goal goal = goalRepository.findByIdAndDeletedFalse(request.getGoalId())
+                   .orElseThrow(() -> new ResourceNotFoundException("Goal not found"));
+
+           if (!goal.getAccount().getId().equals(accountId)) {
+               throw new ResourceNotFoundException("Goal not found");
+           }
+
            conversation.setGoal(goal);
        }
 
@@ -57,7 +65,7 @@ public class ConversationService {
 
     public List<ConversationResponse> getUserConversations(UUID accountId) {
 
-       List <Conversation> conversations =conversationRepository.findByAccountId(accountId);
+       List <Conversation> conversations =conversationRepository.findByAccountIdOrderByUpdatedAtDesc(accountId);
         return conversations.stream().
                 map(this::toResponse).toList();
     }

@@ -46,67 +46,35 @@ export default function Register() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-base-950 px-4">
+    <div className="nexora-page nexora-page-auth min-h-screen bg-base-950 px-4 py-8 sm:px-6">
       <div className="absolute inset-0 bg-grid-fade pointer-events-none" />
-      <div className="relative w-full max-w-sm">
-        <Link to="/" className="mb-8 flex items-center justify-center gap-2">
-          <NexoraMark />
-          <span className="font-display text-lg font-semibold text-ink-100">Nexora</span>
-        </Link>
-
-        <div className="rounded-xl border border-base-700 bg-base-900/70 p-7 shadow-glow">
-          <h1 className="font-display text-xl text-ink-100">Create your account</h1>
-          <p className="mt-1 text-sm text-ink-500">Start with a goal — the roadmap follows.</p>
-
-          <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-4">
-            <Input
-              id="email"
-              label="Email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-            />
-            <Input
-              id="password"
-              label="Password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 8 characters"
-            />
-            <Input
-              id="confirm"
-              label="Confirm password"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              placeholder="••••••••"
-            />
-            {error && (
-              <p role="alert" className="rounded-md border border-signal-rose/30 bg-signal-rose/10 px-3 py-2 text-xs text-signal-rose">
-                {error}
-              </p>
-            )}
-            <Button type="submit" isLoading={submitting} className="mt-1 w-full">
-              Create account
-            </Button>
-          </form>
+      <div className="relative mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-5xl items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
+        <div className="hidden lg:block">
+          <Link to="/" className="inline-flex items-center gap-2.5"><NexoraMark size={30} /><span className="font-display text-lg font-bold">Nexora</span></Link>
+          <p className="mt-12 text-sm font-semibold uppercase tracking-[.18em] text-emerald-200/70">Start your journey</p>
+          <h1 className="mt-3 max-w-md font-display text-4xl font-bold leading-tight text-ink-100">One goal is enough to begin.</h1>
+          <p className="mt-5 max-w-md text-sm leading-6 text-ink-500">Nexora starts simple. Tell it what you want, where you're starting, and how much time you have. The rest grows from there.</p>
+          <div className="mt-8 rounded-2xl border border-base-700 bg-base-900/60 p-5 max-w-md">
+            <p className="nexora-kicker text-amber-200/70">Your first session</p>
+            <div className="mt-4 flex items-center gap-2 text-xs font-semibold"><span className="rounded-lg bg-cyan-300/10 px-2.5 py-1.5 text-cyan-200">Goal</span><span className="text-ink-700">→</span><span className="rounded-lg bg-emerald-300/10 px-2.5 py-1.5 text-emerald-200">Path</span><span className="text-ink-700">→</span><span className="rounded-lg bg-amber-300/10 px-2.5 py-1.5 text-amber-200">Action</span></div>
+          </div>
         </div>
-
-        <p className="mt-6 text-center text-sm text-ink-500">
-          Already have an account?{' '}
-          <Link to="/login" className="text-signal-violetSoft hover:underline">
-            Sign in
-          </Link>
-        </p>
+        <div className="mx-auto w-full max-w-md">
+          <Link to="/" className="mb-7 flex items-center justify-center gap-2.5 lg:hidden"><NexoraMark /><span className="font-display text-lg font-bold">Nexora</span></Link>
+          <div className="nexora-auth-card p-7 sm:p-8">
+            <p className="nexora-kicker text-emerald-200/70">Create account</p>
+            <h1 className="mt-2 font-display text-2xl font-bold text-ink-100">Let's build your first path.</h1>
+            <p className="mt-2 text-sm text-ink-500">Create an account now. Your first step after signing in is defining a goal.</p>
+            <form onSubmit={onSubmit} className="mt-7 flex flex-col gap-4">
+              <Input id="email" label="Email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+              <Input id="password" label="Password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" />
+              <Input id="confirm" label="Confirm password" type="password" autoComplete="new-password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Repeat your password" />
+              {error && <p role="alert" className="rounded-xl border border-signal-rose/30 bg-signal-rose/10 px-3.5 py-3 text-xs leading-5 text-rose-200">{error}</p>}
+              <Button type="submit" isLoading={submitting} className="mt-1 w-full">Create account <span aria-hidden="true">→</span></Button>
+            </form>
+          </div>
+          <p className="mt-6 text-center text-sm text-ink-500">Already have an account? <Link to="/login" className="font-semibold text-cyan-200 hover:text-cyan-100">Sign in</Link></p>
+        </div>
       </div>
     </div>
   )

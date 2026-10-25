@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes } from 'react'
 import { cn } from '../../utils/cn'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'soft'
 type Size = 'sm' | 'md' | 'lg'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -12,44 +12,46 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    'bg-signal-violet text-white hover:bg-signal-violetSoft shadow-glow disabled:hover:bg-signal-violet',
+    'border border-cyan-200/20 bg-gradient-to-r from-cyan-200 via-cyan-300 to-cyan-200 text-slate-950 shadow-[0_16px_42px_-22px_rgba(34,211,238,.95)] hover:from-cyan-100 hover:via-cyan-200 hover:to-cyan-100 hover:shadow-[0_18px_46px_-20px_rgba(34,211,238,.95)]',
   secondary:
-    'bg-base-800 text-ink-100 border border-base-600 hover:border-signal-violet/60 hover:bg-base-700',
-  ghost: 'bg-transparent text-ink-300 hover:text-ink-100 hover:bg-base-800',
-  danger: 'bg-signal-rose/10 text-signal-rose border border-signal-rose/30 hover:bg-signal-rose/20',
+    'border border-white/[.10] bg-white/[.045] text-ink-100 hover:border-cyan-200/30 hover:bg-white/[.075]',
+  soft:
+    'border border-cyan-200/15 bg-cyan-200/[.07] text-cyan-100 hover:border-cyan-200/30 hover:bg-cyan-200/[.12]',
+  ghost: 'border border-transparent bg-transparent text-ink-400 hover:border-white/[.08] hover:bg-white/[.035] hover:text-ink-100',
+  danger: 'border border-signal-rose/30 bg-signal-rose/10 text-rose-100 hover:bg-signal-rose/16 hover:border-signal-rose/45',
 }
 
 const sizeClasses: Record<Size, string> = {
-  sm: 'text-sm px-3 py-1.5 rounded-md gap-1.5',
-  md: 'text-sm px-4 py-2.5 rounded-lg gap-2',
-  lg: 'text-base px-6 py-3 rounded-lg gap-2',
+  sm: 'min-h-9 px-3 text-xs rounded-lg gap-2',
+  md: 'min-h-11 px-4 text-sm rounded-xl gap-2',
+  lg: 'min-h-12 px-5 text-sm rounded-xl gap-2.5',
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', isLoading, className, children, disabled, ...props }, ref) => {
-    return (
-      <button
-        ref={ref}
-        disabled={disabled || isLoading}
-        className={cn(
-          'inline-flex items-center justify-center font-medium transition-all duration-150',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
-          'active:scale-[0.98]',
-          variantClasses[variant],
-          sizeClasses[size],
-          className,
-        )}
-        {...props}
-      >
-        {isLoading && (
-          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-            <path className="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8v3a5 5 0 00-5 5H4z" />
-          </svg>
-        )}
-        {children}
-      </button>
-    )
-  },
+  ({ variant = 'primary', size = 'md', isLoading, className, children, disabled, type = 'button', ...props }, ref) => (
+    <button
+      ref={ref}
+      type={type}
+      disabled={disabled || isLoading}
+      className={cn(
+        'inline-flex cursor-pointer items-center justify-center font-semibold tracking-[-0.01em] transition-[background-color,border-color,box-shadow,color,transform] duration-200',
+        'disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none',
+        'active:translate-y-px',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-base-950',
+        variantClasses[variant],
+        sizeClasses[size],
+        className,
+      )}
+      {...props}
+    >
+      {isLoading && (
+        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle className="opacity-25" cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2.5" />
+          <path className="opacity-90" fill="currentColor" d="M12 3a9 9 0 0 1 8.5 6h-2.7A6.5 6.5 0 0 0 12 5.5V3Z" />
+        </svg>
+      )}
+      {children}
+    </button>
+  ),
 )
 Button.displayName = 'Button'

@@ -8,6 +8,7 @@ import io.nexora.backend.ai.prompt.PromptBuilder;
 import io.nexora.backend.common.exception.ResourceNotFoundException;
 import io.nexora.backend.goal.entity.Goal;
 import io.nexora.backend.goal.repository.GoalRepository;
+import io.nexora.backend.roadmap.dto.request.SetMilestoneCompletionRequest;
 import io.nexora.backend.roadmap.dto.response.RoadmapMilestoneResponse;
 import io.nexora.backend.roadmap.dto.response.RoadmapResponse;
 import io.nexora.backend.roadmap.dto.response.RoadmapSkillResponse;
@@ -87,6 +88,30 @@ public class RoadmapService {
         return toResponse(savedRoadmap);
     }
 
+    @Transactional
+    public RoadmapResponse regenerateRoadmap(UUID goalId, String email) {
+        Goal goal = getAuthorizedGoal(goalId, email);
+        RoadmapGenerationResponse aiResponse = aiClient.generate(
+                promptBuilder.buildRoadmapPrompt(goal), RoadmapGenerationResponse.class);
+        Roadmap roadmap = roadmapRepository.findByGoalId(goalId).orElseGet(() -> Roadmap.builder()
+                .goal(goal).title(goal.getTitle() + " Roadmap").build());
+
+        // Mutate the existing roadmap identity so historical progress records keep
+        // their roadmap foreign key instead of being orphaned. Only replace its
+        // generated children after AI generation succeeds.
+        roadmap.getMilestones().clear();
+        roadmap.getSkills().clear();
+        roadmap.setTitle(goal.getTitle() + " Roadmap");
+        roadmap.setDescription(goal.getDescription() != null ? goal.getDescription() : "AI generated roadmap");
+        roadmap.setGeneratedAt(Instant.now());
+        roadmap.setActive(true);
+        Roadmap saved = roadmapRepository.save(roadmap);
+        if (aiResponse.getSkills() != null) skillRepository.saveAll(aiResponse.getSkills().stream().map(x -> toSkillEntity(saved, x)).toList());
+        if (aiResponse.getMilestones() != null) milestoneRepository.saveAll(IntStream.range(0, aiResponse.getMilestones().size())
+                .mapToObj(i -> toMilestoneEntity(saved, aiResponse.getMilestones().get(i), i + 1)).toList());
+        return toResponse(saved);
+    }
+
     @Transactional(readOnly = true)
     public RoadmapResponse getRoadmapByGoalId(UUID goalId, String email) {
 
@@ -99,12 +124,57 @@ public class RoadmapService {
     }
 
     /**
+     * Manually sets a milestone's completion state. This sets
+     * `manualOverride`, which permanently opts this milestone out of the
+     * task-based auto-complete in ProgressService.completeTask — once a
+     * user has explicitly said whether a milestone is done, checking off
+     * (or leaving unchecked) individual tasks should never silently
+     * override that again.
+     */
+    @Transactional
+    public RoadmapMilestoneResponse setMilestoneCompletion(
+            UUID goalId, UUID milestoneId, String email, SetMilestoneCompletionRequest request) {
+
+        Goal goal = getAuthorizedGoal(goalId, email);
+
+        Roadmap roadmap = roadmapRepository.findByGoalId(goal.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Roadmap not found"));
+
+        Milestone milestone = milestoneRepository.findById(milestoneId)
+                .orElseThrow(() -> new ResourceNotFoundException("Milestone not found"));
+
+        // A milestone ID is a guessable-format UUID like any other; without
+        // this check, an authenticated user could toggle a milestone that
+        // belongs to a *different* goal (even a different account's goal)
+        // as long as they knew or brute-forced its ID.
+        if (!milestone.getRoadmap().getId().equals(roadmap.getId())) {
+            throw new ResourceNotFoundException("Milestone not found");
+        }
+
+        milestone.setCompleted(request.getCompleted());
+        milestone.setManualOverride(true);
+        Milestone saved = milestoneRepository.save(milestone);
+
+        return toMilestoneResponse(saved);
+    }
+
+    /**
      * Looks up a roadmap by goal id without an ownership check, for callers
      * (e.g. MessageService) that have already authorized the caller via a
      * different owning entity (the conversation). Returns null instead of
      * throwing when no roadmap exists yet, since "no roadmap" is a normal
      * state for AI chat context, not an error.
      */
+    @Transactional(readOnly = true)
+    public java.util.Map<UUID, Roadmap> findRoadmapsByGoalIds(List<UUID> goalIds) {
+        if (goalIds == null || goalIds.isEmpty()) return java.util.Map.of();
+        return roadmapRepository.findAllByGoalIdIn(goalIds).stream().collect(java.util.stream.Collectors.toMap(r -> r.getGoal().getId(), r -> r));
+    }
+
+    public RoadmapResponse toResponseForInternal(Roadmap roadmap) {
+        return toResponse(roadmap);
+    }
+
     @Transactional(readOnly = true)
     public RoadmapResponse getRoadmapByGoalIdOrNull(UUID goalId) {
         return roadmapRepository.findByGoalId(goalId)
@@ -184,6 +254,7 @@ public class RoadmapService {
                 .estimatedDays(milestone.getEstimatedDays())
                 .tasks(milestone.getTasks())
                 .completed(milestone.isCompleted())
+                .manualOverride(milestone.isManualOverride())
                 .build();
     }
 }

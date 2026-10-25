@@ -1,16 +1,11 @@
 package io.nexora.backend.progress.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Data @Builder @NoArgsConstructor @AllArgsConstructor
 public class CreateProgressTaskRequest {
-
-    private String milestoneTitle;
-    private String taskTitle;
+    @NotBlank @Size(max=500) private String milestoneTitle;
+    @NotBlank @Size(max=1000) private String taskTitle;
 }

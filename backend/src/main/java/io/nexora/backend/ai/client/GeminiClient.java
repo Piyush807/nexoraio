@@ -46,10 +46,10 @@ public class GeminiClient implements AIClient {
                     .uri(
                             "https://generativelanguage.googleapis.com/v1beta/models/"
                                     + properties.getModel()
-                                    + ":generateContent?key="
-                                    + properties.getApiKey()
+                                    + ":generateContent"
                     )
                     .contentType(MediaType.APPLICATION_JSON)
+                    .header("x-goog-api-key", properties.getApiKey())
                     .body(request)
                     .retrieve()
                     .body(GeminiResponse.class);
@@ -70,22 +70,73 @@ public class GeminiClient implements AIClient {
         }
 
         try {
+            if (response == null || response.getCandidates() == null || response.getCandidates().isEmpty()
+                    || response.getCandidates().get(0).getContent() == null
+                    || response.getCandidates().get(0).getContent().getParts() == null
+                    || response.getCandidates().get(0).getContent().getParts().isEmpty()
+                    || response.getCandidates().get(0).getContent().getParts().get(0).getText() == null) {
+                throw new AIServiceException("AI returned an empty response.");
+            }
 
             String json =
                     response.getCandidates()
-                            .getFirst()
+                            .get(0)
                             .getContent()
                             .getParts()
-                            .getFirst()
+                            .get(0)
                             .getText();
 
-            return objectMapper.readValue(json, responseType);
+            if (responseType.equals(String.class)) {
+                return responseType.cast(extractPlainText(json));
+            }
+            String cleaned = json.trim();
+            if (cleaned.startsWith("```") && cleaned.endsWith("```")) {
+                int newline = cleaned.indexOf('\n');
+                cleaned = newline >= 0 ? cleaned.substring(newline + 1, cleaned.length() - 3).trim() : cleaned;
+            }
+            if (responseType.equals(io.nexora.backend.ai.dto.response.ChatResponse.class)) {
+                try {
+                    return objectMapper.readValue(cleaned, responseType);
+                } catch (Exception ignored) {
+                    String reply = extractReplyField(json);
+                    if (!reply.isBlank()) {
+                        return responseType.cast(io.nexora.backend.ai.dto.response.ChatResponse.builder().reply(reply).build());
+                    }
+                    return responseType.cast(io.nexora.backend.ai.dto.response.ChatResponse.builder().reply(json.trim()).build());
+                }
+            }
+            return objectMapper.readValue(cleaned, responseType);
 
+        } catch (AIServiceException e) {
+            throw e;
         } catch (Exception e) {
-
-            throw new RuntimeException("Failed to parse Gemini response", e);
+            throw new AIServiceException("Failed to parse AI response.", e);
 
         }
 
     }
+    private String extractPlainText(String raw) {
+        String reply = extractReplyField(raw);
+        return reply.isBlank() ? raw.trim() : reply;
+    }
+
+    private String extractReplyField(String raw) {
+        if (raw == null || raw.isBlank()) return "";
+        try {
+            var node = objectMapper.readTree(raw.trim());
+            if (node != null && node.isObject() && node.get("reply") != null) {
+                return node.get("reply").asText("").trim();
+            }
+        } catch (Exception ignored) { }
+        java.util.regex.Matcher matcher = java.util.regex.Pattern
+                .compile("(?s)(?:\\\"reply\\\"|reply)\\s*:\\s*\\\"((?:\\\\.|[^\\\"\\\\])*)\\\"")
+                .matcher(raw);
+        if (matcher.find()) {
+            String value = matcher.group(1);
+            try { return objectMapper.readValue("\"" + value + "\"", String.class).trim(); }
+            catch (Exception ignored) { return value.trim(); }
+        }
+        return "";
+    }
+
 }

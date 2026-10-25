@@ -11,6 +11,7 @@ import io.nexora.backend.goal.enums.GoalStatus;
 import io.nexora.backend.goal.mapper.GoalMapper;
 import io.nexora.backend.goal.repository.GoalRepository;
 import lombok.RequiredArgsConstructor;
+import io.nexora.backend.memory.service.GrowthMemoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class GoalService {
     private final GoalRepository goalRepository;
     private final GoalMapper goalMapper;
     private final AccountRepository accountRepository;
+    private final GrowthMemoryService growthMemoryService;
 
     private Account getAccount(String email) {
         return accountRepository.findByEmail(email)
@@ -60,7 +62,9 @@ public class GoalService {
                 .deleted(false)
                 .build();
 
-        return goalMapper.toResponse(goalRepository.save(goal));
+        Goal saved = goalRepository.save(goal);
+        growthMemoryService.refresh(email);
+        return goalMapper.toResponse(saved);
     }
 
     public List<GoalResponse> getGoals(String email) {
@@ -92,7 +96,9 @@ public class GoalService {
         goal.setDailyStudyHours(request.getDailyStudyHours());
         goal.setUpdatedAt(Instant.now());
 
-        return goalMapper.toResponse(goalRepository.save(goal));
+        Goal saved = goalRepository.save(goal);
+        growthMemoryService.refresh(email);
+        return goalMapper.toResponse(saved);
     }
 
     public ResponseEntity<Void> deleteGoal(UUID goalId, String email) {
@@ -102,6 +108,7 @@ public class GoalService {
         goal.setDeleted(true);
 
         goalRepository.save(goal);
+        growthMemoryService.refresh(email);
 
         return ResponseEntity.ok().build();
     }

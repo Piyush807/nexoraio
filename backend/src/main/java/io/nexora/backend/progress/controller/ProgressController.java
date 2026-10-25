@@ -5,6 +5,7 @@ import io.nexora.backend.progress.dto.request.CreateProgressTaskRequest;
 import io.nexora.backend.progress.dto.response.ProgressEntryResponse;
 import io.nexora.backend.progress.dto.response.ProgressTaskResponse;
 import io.nexora.backend.progress.service.ProgressService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ public class ProgressController {
     @PostMapping
     public ResponseEntity<ProgressEntryResponse> recordProgress(
             @PathVariable UUID goalId,
-            @RequestBody CreateProgressEntryRequest request,
+            @RequestBody @Valid CreateProgressEntryRequest request,
             Authentication authentication) {
 
         return ResponseEntity.ok(progressService.recordProgress(goalId, authentication.getName(), request));
@@ -45,7 +46,7 @@ public class ProgressController {
     @PostMapping("/tasks")
     public ResponseEntity<ProgressTaskResponse> completeTask(
             @PathVariable UUID goalId,
-            @RequestBody CreateProgressTaskRequest request,
+            @RequestBody @Valid CreateProgressTaskRequest request,
             Authentication authentication) {
 
         return ResponseEntity.ok(progressService.completeTask(goalId, authentication.getName(), request));
