@@ -1,10 +1,3 @@
-// Matches io.nexora.backend.roadmap.dto.response.* DTOs exactly.
-// The backend currently exposes only:
-//   POST /api/v1/goals/{goalId}/roadmap   -> generate
-//   GET  /api/v1/goals/{goalId}/roadmap   -> fetch
-// There is no milestone/skill mutation endpoint yet, so "completed"
-// is display-only until the backend adds that mutation.
-
 export interface RoadmapSkillResponse {
   id: string
   name: string
@@ -12,7 +5,6 @@ export interface RoadmapSkillResponse {
   progressPercentage: number | null
   completed: boolean
 }
-
 export interface RoadmapMilestoneResponse {
   id: string
   title: string
@@ -21,8 +13,8 @@ export interface RoadmapMilestoneResponse {
   estimatedDays: number | null
   tasks: string[]
   completed: boolean
+  manualOverride: boolean
 }
-
 export interface RoadmapResponse {
   id: string
   goalId: string
@@ -32,4 +24,7 @@ export interface RoadmapResponse {
   active: boolean
   skills: RoadmapSkillResponse[]
   milestones: RoadmapMilestoneResponse[]
+}
+export interface SetMilestoneCompletionRequest {
+  completed: boolean
 }

@@ -1,12 +1,6 @@
-// Matches io.nexora.backend.conversation.* DTOs exactly.
-
 export type MessageRole = 'USER' | 'ASSISTANT'
 
-export interface CreateConversationRequest {
-  goalId?: string | null
-  title: string
-}
-
+export interface CreateConversationRequest { goalId?: string | null; title: string }
 export interface ConversationResponse {
   id: string
   goalId: string | null
@@ -14,11 +8,7 @@ export interface ConversationResponse {
   createdAt: string
   updatedAt: string
 }
-
-export interface CreateMessageRequest {
-  content: string
-}
-
+export interface CreateMessageRequest { content: string }
 export interface MessageResponse {
   id: string
   role: MessageRole

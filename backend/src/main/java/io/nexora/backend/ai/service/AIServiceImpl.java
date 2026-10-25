@@ -7,6 +7,7 @@ import io.nexora.backend.ai.prompt.PromptBuilder;
 import io.nexora.backend.conversation.entity.Message;
 import io.nexora.backend.goal.entity.Goal;
 import io.nexora.backend.roadmap.dto.response.RoadmapResponse;
+import io.nexora.backend.memory.dto.response.GrowthMemoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +37,23 @@ public class AIServiceImpl implements AIService {
 
     @Override
     public ChatResponse chat(List<Message> messages, Goal goal, RoadmapResponse roadmap) {
+        return chat(messages, goal, roadmap, null);
+    }
 
-        String prompt = promptBuilder.buildChatPrompt(messages, goal, roadmap);
+    @Override
+    public ChatResponse chat(List<Message> messages, Goal goal, RoadmapResponse roadmap, GrowthMemoryResponse memory) {
+        String prompt = promptBuilder.buildChatPrompt(messages, goal, roadmap, memory);
+        return aiClient.generate(prompt, ChatResponse.class);
+    }
 
+    @Override
+    public ChatResponse chat(List<Message> messages, List<Goal> activeGoals) {
+        return chat(messages, activeGoals, null);
+    }
+
+    @Override
+    public ChatResponse chat(List<Message> messages, List<Goal> activeGoals, GrowthMemoryResponse memory) {
+        String prompt = promptBuilder.buildChatPrompt(messages, activeGoals, memory);
         return aiClient.generate(prompt, ChatResponse.class);
     }
 }

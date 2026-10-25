@@ -7,7 +7,7 @@ import { daysUntil, formatDate } from '../../utils/formatDate'
 const statusTone = {
   ACTIVE: 'mint',
   PAUSED: 'amber',
-  COMPLETED: 'violet',
+  COMPLETED: 'mint',
   CANCELLED: 'rose',
 } as const
 
@@ -21,7 +21,7 @@ export function GoalCard({ goal }: { goal: GoalResponse }) {
   const remaining = daysUntil(goal.targetDate)
   return (
     <Link to={`/goals/${goal.id}`}>
-      <Card className="group p-5 transition-all hover:border-signal-violet/40 hover:-translate-y-0.5">
+      <Card className="group nexora-sheen relative overflow-hidden p-5 transition-all hover:-translate-y-0.5">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-display text-base text-ink-100">{goal.title}</h3>
           <Badge tone={statusTone[goal.status]}>{goal.status}</Badge>

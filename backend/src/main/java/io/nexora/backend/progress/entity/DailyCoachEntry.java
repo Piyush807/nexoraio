@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_daily_coach_goal_date", columnNames = {"goal_id", "coachDate"}))
 @Data
 @Builder
 @NoArgsConstructor

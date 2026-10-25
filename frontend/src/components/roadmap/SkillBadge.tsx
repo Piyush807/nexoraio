@@ -6,7 +6,7 @@ export function SkillBadge({ skill }: { skill: RoadmapSkillResponse }) {
     <div className="flex items-center gap-3 rounded-lg border border-base-700 bg-base-900/60 px-3.5 py-2.5">
       <span
         className={`h-2 w-2 shrink-0 rounded-full ${
-          skill.completed ? 'bg-signal-mint' : 'bg-signal-violet'
+          skill.completed ? 'bg-signal-mint' : 'bg-cyan-200'
         }`}
       />
       <div className="min-w-0 flex-1">
@@ -16,7 +16,7 @@ export function SkillBadge({ skill }: { skill: RoadmapSkillResponse }) {
       <div className="w-16 shrink-0">
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-base-700">
           <div
-            className={`h-full rounded-full ${skill.completed ? 'bg-signal-mint' : 'bg-signal-violet'}`}
+            className={`h-full rounded-full ${skill.completed ? 'bg-signal-mint' : 'bg-cyan-200'}`}
             style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
           />
         </div>

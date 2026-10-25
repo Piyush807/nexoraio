@@ -44,4 +44,18 @@ public class Milestone {
 
     @Builder.Default
     private boolean completed = false;
+
+    // Set true the moment a user manually toggles completion via
+    // PATCH /roadmap/milestones/{id}. Once true, the task-based
+    // auto-complete logic in ProgressService.completeTask stops touching
+    // this milestone's `completed` field — manual intent always wins.
+    //
+    // columnDefinition forces a DB-level DEFAULT on the ALTER TABLE that
+    // adds this column, so Postgres backfills every existing milestone row
+    // with false instead of leaving NULL — a bare Java default only
+    // applies to rows inserted after this change, and Hibernate cannot
+    // map a NULL column into a primitive boolean (it throws on read).
+    @Builder.Default
+    @Column(name = "manual_override", nullable = false, columnDefinition = "boolean default false")
+    private boolean manualOverride = false;
 }

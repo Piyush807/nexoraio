@@ -1,179 +1,108 @@
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { NexoraMark } from '../components/layout/Navbar'
 import { useAuth } from '../hooks/useAuth'
-import { Navigate } from 'react-router-dom'
+import { AuroraField } from '../components/landing/AuroraField'
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth()
   if (!isLoading && isAuthenticated) return <Navigate to="/dashboard" replace />
 
   return (
-    <div className="min-h-screen bg-base-950">
-      <header className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-4 md:px-6">
-        <div className="flex items-center gap-2">
-          <NexoraMark />
-          <span className="font-display text-[17px] font-semibold tracking-tight text-ink-100">Nexora</span>
-        </div>
-        <nav className="flex items-center gap-2">
-          <Link to="/login" className="px-3.5 py-2 text-sm text-ink-300 hover:text-ink-100">
-            Sign in
-          </Link>
-          <Link
-            to="/register"
-            className="rounded-lg bg-signal-violet px-4 py-2 text-sm font-medium text-white shadow-glow hover:bg-signal-violetSoft"
-          >
-            Get started
-          </Link>
+    <div className="nexora-page nexora-page-landing min-h-screen bg-base-950">
+      <header className="mx-auto flex h-16 max-w-[1240px] items-center justify-between px-4 sm:px-6">
+        <Link to="/" className="flex items-center gap-2.5"><NexoraMark size={30} /><span className="font-display text-lg font-bold">Nexora</span></Link>
+        <nav className="flex items-center gap-1.5" aria-label="Account navigation">
+          <Link to="/login" className="inline-flex min-h-10 items-center rounded-xl px-3.5 text-sm font-semibold text-ink-400 hover:bg-base-800 hover:text-ink-100">Sign in</Link>
+          <Link to="/register" className="inline-flex min-h-10 items-center rounded-xl bg-cyan-300 px-4 text-sm font-bold text-slate-950 hover:bg-cyan-200">Get started</Link>
         </nav>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-fade pointer-events-none" />
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-12 px-4 py-16 md:px-6 md:py-24 lg:grid-cols-2 lg:py-32">
-          <div className="animate-fadeUp">
-            <span className="inline-flex items-center gap-2 rounded-full border border-base-600 bg-base-900 px-3 py-1 font-mono text-xs text-ink-500">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal-mint animate-pulseSoft" />
-              Goal-aware AI, not a generic chatbot
-            </span>
-            <h1 className="mt-5 text-balance font-display text-4xl font-semibold leading-[1.08] text-ink-100 sm:text-5xl lg:text-[3.4rem]">
-              Turn a goal into a roadmap the AI actually remembers.
-            </h1>
-            <p className="mt-5 max-w-lg text-balance text-base leading-relaxed text-ink-300">
-              Nexora traces one line from your goal to a personalized roadmap, your day-to-day
-              progress, and every conversation with your AI assistant — so the advice you get is
-              built on what you've actually done, not a blank page.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                to="/register"
-                className="rounded-lg bg-signal-violet px-5 py-3 text-sm font-medium text-white shadow-glow hover:bg-signal-violetSoft"
-              >
-                Create your first goal
-              </Link>
-              <Link
-                to="/login"
-                className="rounded-lg border border-base-600 px-5 py-3 text-sm font-medium text-ink-300 hover:border-signal-violet/50 hover:text-ink-100"
-              >
-                Sign in
-              </Link>
+      <main>
+        <section className="relative overflow-hidden border-t border-base-700/50">
+          <AuroraField />
+          <div className="absolute inset-0 bg-grid-fade pointer-events-none" />
+          <div className="mx-auto grid max-w-[1240px] items-center gap-14 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-[1.05fr_.95fr] lg:py-28">
+            <div className="relative z-10 animate-fadeUp">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[.06] px-3 py-1.5 text-[11px] font-semibold text-cyan-100">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulseSoft" aria-hidden="true" />
+                A personal growth operating system
+              </span>
+              <h1 className="mt-6 max-w-3xl animate-fadeUp font-display text-4xl font-bold leading-[1.05] tracking-[-.05em] text-ink-100 [animation-delay:80ms] sm:text-5xl lg:text-[4.25rem]">
+                Stop collecting plans.<br /><span className="text-cyan-200">Start becoming.</span>
+              </h1>
+              <p className="mt-6 max-w-xl animate-fadeUp text-base leading-7 text-slate-400 [animation-delay:160ms] sm:text-lg">
+                Nexora takes what you want to achieve, turns it into a realistic path, helps you act today, and learns from the progress you actually make.
+              </p>
+              <div className="mt-8 flex animate-fadeUp flex-wrap gap-3 [animation-delay:240ms]">
+                <Link to="/register" className="inline-flex min-h-12 items-center rounded-xl bg-cyan-300 px-5 text-sm font-bold text-slate-950 shadow-[0_18px_42px_-24px_rgba(34,211,238,.95)] transition-transform duration-200 hover:-translate-y-0.5 hover:bg-cyan-200">Create your first goal <span className="ml-2">→</span></Link>
+                <Link to="/login" className="inline-flex min-h-12 items-center rounded-xl border border-base-600 bg-base-900/70 px-5 text-sm font-semibold text-ink-200 transition-colors hover:border-cyan-300/25 hover:bg-base-800">I already have an account</Link>
+              </div>
+              <div className="mt-10 flex animate-fadeUp flex-wrap gap-x-6 gap-y-2 text-xs text-ink-700 [animation-delay:320ms]">
+                <span>Goal-aware coaching</span><span>•</span><span>Progress memory</span><span>•</span><span>Adaptive paths</span>
+              </div>
             </div>
-            <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-base-700 pt-6">
-              {[
-                ['4', 'linked domains'],
-                ['1', 'source of truth'],
-                ['24/7', 'context-aware AI'],
-              ].map(([value, label]) => (
-                <div key={label}>
-                  <dt className="font-display text-2xl text-ink-100">{value}</dt>
-                  <dd className="mt-1 font-mono text-xs uppercase tracking-wide text-ink-700">{label}</dd>
-                </div>
-              ))}
-            </dl>
+            <JourneyPreview />
           </div>
+        </section>
 
-          <TraceDiagram />
-        </div>
-      </section>
+        <section className="mx-auto max-w-[1240px] px-4 py-16 sm:px-6 md:py-20">
+          <div className="max-w-2xl"><p className="nexora-kicker text-cyan-200/80">The product loop</p><h2 className="mt-2 font-display text-3xl font-bold text-ink-100 sm:text-4xl">One system instead of five disconnected tools.</h2><p className="mt-4 text-sm leading-6 text-ink-500">Every part of Nexora feeds the next, so the interface always has a reason to ask you to do something.</p></div>
+          <div className="mt-10 grid gap-px overflow-hidden rounded-3xl border border-base-700 bg-base-700 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((f, i) => <div key={f.title} className="group bg-base-950 p-6 transition-colors hover:bg-base-900">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold ${f.tone}`}>{String(i + 1).padStart(2, '0')}</div>
+              <h3 className="mt-6 font-display text-lg font-semibold text-ink-100">{f.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-ink-500">{f.body}</p>
+              <div className="mt-6 text-xs font-semibold text-ink-700 group-hover:text-ink-400">{f.micro}</div>
+            </div>)}
+          </div>
+        </section>
 
-      {/* Feature strip — mirrors the actual domain spine, nothing invented */}
-      <section className="mx-auto max-w-[1400px] border-t border-base-700 px-4 py-16 md:px-6">
-        <p className="font-mono text-xs uppercase tracking-widest text-signal-violetSoft">The spine</p>
-        <h2 className="mt-2 font-display text-2xl text-ink-100 sm:text-3xl">
-          Goal → Roadmap → Progress → Conversation
-        </h2>
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((f, i) => (
-            <div
-              key={f.title}
-              className="group rounded-xl border border-base-700 bg-base-900/60 p-5 transition-colors hover:border-signal-violet/40"
-            >
-              <span className="font-mono text-xs text-ink-700">0{i + 1}</span>
-              <h3 className="mt-3 font-display text-base text-ink-100">{f.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-ink-500">{f.body}</p>
+        <section className="border-y border-base-700/70 bg-base-900/30">
+          <div className="mx-auto grid max-w-[1240px] gap-10 px-4 py-16 sm:px-6 md:grid-cols-[.75fr_1.25fr] md:py-20">
+            <div><p className="nexora-kicker text-amber-200/80">Designed around action</p><h2 className="mt-2 font-display text-3xl font-bold text-ink-100">Open Nexora and know what matters now.</h2></div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <MiniFeature title="Today" body="Daily intelligence surfaces the next useful move instead of making you scan everything." tone="cyan" />
+              <MiniFeature title="Your path" body="Roadmaps break ambition into milestones and tasks you can actually execute." tone="mint" />
+              <MiniFeature title="Your coach" body="Conversations stay connected to the goal, roadmap, progress and memory." tone="rose" />
+              <MiniFeature title="Your journey" body="See rhythm, completed work and reflection signals over time." tone="amber" />
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      <footer className="border-t border-base-700 px-4 py-8 md:px-6">
-        <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-3 text-xs text-ink-700 sm:flex-row">
-          <span>© {new Date().getFullYear()} Nexora</span>
-          <span className="font-mono">Built with Spring Boot, PostgreSQL, and Gemini</span>
-        </div>
-      </footer>
+        <section className="mx-auto max-w-[1240px] px-4 py-20 text-center sm:px-6">
+          <p className="nexora-kicker text-emerald-200/80">Start small</p>
+          <h2 className="mx-auto mt-3 max-w-2xl font-display text-3xl font-bold text-ink-100 sm:text-4xl">Give Nexora one goal. Let the system grow from there.</h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-ink-500">No long setup. Define the outcome, choose where you're starting, and let the first path take shape.</p>
+          <Link to="/register" className="mt-7 inline-flex min-h-12 items-center rounded-xl bg-emerald-300 px-5 text-sm font-bold text-slate-950 hover:bg-emerald-200">Build my path <span className="ml-2">→</span></Link>
+        </section>
+      </main>
+
+      <footer className="border-t border-base-700/70 px-4 py-8 sm:px-6"><div className="mx-auto flex max-w-[1240px] flex-col gap-2 text-xs text-ink-700 sm:flex-row sm:items-center sm:justify-between"><span>© {new Date().getFullYear()} Nexora</span><span>From a goal to a path. From a path to progress. From progress to growth.</span></div></footer>
     </div>
   )
 }
 
 const features = [
-  {
-    title: 'Goal',
-    body: 'Set a title, your current level, target date, and daily study hours — the inputs the AI reasons from.',
-  },
-  {
-    title: 'Roadmap',
-    body: 'Gemini generates structured milestones and skills for that goal, stored in Nexora, not in the prompt window.',
-  },
-  {
-    title: 'Progress',
-    body: 'Log entries and completed tasks against your roadmap to build a real record over time.',
-  },
-  {
-    title: 'Conversation',
-    body: 'Chat with persistent history, so a question today can build on what you asked last week.',
-  },
+  { title:'Goal', body:'Define the outcome in plain language, with your current level, time and target date.', micro:'Start with where you are.', tone:'bg-cyan-300/10 text-cyan-200' },
+  { title:'Path', body:'Turn the outcome into milestones, skills and tasks with a roadmap you can review.', micro:'See the whole route.', tone:'bg-emerald-300/10 text-emerald-200' },
+  { title:'Action', body:'Surface the next meaningful task so progress feels concrete instead of overwhelming.', micro:'Know what to do next.', tone:'bg-amber-300/10 text-amber-200' },
+  { title:'Growth', body:'Use progress, reflection and coaching context to keep the path relevant as you change.', micro:'Let the system learn.', tone:'bg-rose-300/10 text-rose-200' },
 ]
 
-function TraceDiagram() {
-  const nodes = [
-    { label: 'GOAL', x: 40, y: 40 },
-    { label: 'ROADMAP', x: 260, y: 120 },
-    { label: 'PROGRESS', x: 40, y: 200 },
-    { label: 'CONVERSATION', x: 260, y: 280 },
-  ]
-  return (
-    <div className="relative mx-auto w-full max-w-md animate-fadeUp [animation-delay:150ms]">
-      <svg viewBox="0 0 380 340" className="w-full" role="img" aria-label="Diagram of Goal, Roadmap, Progress, and Conversation connected in sequence">
-        <path
-          d="M60 50 L280 130 L60 210 L280 290"
-          fill="none"
-          stroke="#232838"
-          strokeWidth="2"
-        />
-        <path
-          d="M60 50 L280 130 L60 210 L280 290"
-          fill="none"
-          stroke="#6C5CE7"
-          strokeWidth="2"
-          strokeDasharray="620"
-          strokeDashoffset="620"
-          className="animate-dash"
-        />
-        {nodes.map((n, i) => (
-          <g key={n.label} transform={`translate(${n.x},${n.y})`}>
-            <circle
-              r="20"
-              fill="#12161F"
-              stroke={i === 3 ? '#3DDC97' : '#6C5CE7'}
-              strokeWidth="2"
-            />
-            <circle r="4" fill={i === 3 ? '#3DDC97' : '#8A7CF0'} />
-          </g>
-        ))}
-        {nodes.map((n) => (
-          <text
-            key={n.label}
-            x={n.x}
-            y={n.y + 40}
-            textAnchor="middle"
-            className="fill-ink-300"
-            style={{ font: '600 11px "JetBrains Mono", monospace', letterSpacing: '0.04em' }}
-          >
-            {n.label}
-          </text>
-        ))}
-      </svg>
-    </div>
-  )
+function MiniFeature({ title, body, tone }: { title:string; body:string; tone:'cyan'|'mint'|'rose'|'amber' }) {
+  const colors={cyan:'border-cyan-300/15 bg-cyan-300/[.04]',mint:'border-emerald-300/15 bg-emerald-300/[.04]',rose:'border-rose-300/15 bg-rose-300/[.04]',amber:'border-amber-300/15 bg-amber-300/[.04]'}
+  return <div className={`rounded-2xl border p-5 ${colors[tone]}`}><h3 className="font-display font-semibold text-ink-100">{title}</h3><p className="mt-2 text-sm leading-6 text-ink-500">{body}</p></div>
 }
+
+function JourneyPreview(){
+  return <div className="relative mx-auto w-full max-w-[520px] animate-fadeUp [animation-delay:200ms] lg:pl-6" aria-label="Preview of the Nexora growth loop">
+    <div className="absolute -inset-6 rounded-[40px] bg-cyan-300/[.035] blur-2xl" />
+    <div className="group relative overflow-hidden rounded-[28px] border border-base-600 bg-[#0d1319] p-5 shadow-[0_35px_100px_-55px_rgba(34,211,238,.55)] transition-transform duration-300 hover:-translate-y-1">
+      <div className="flex items-center justify-between border-b border-base-700 pb-4"><div><p className="nexora-kicker text-cyan-200/70">TODAY</p><p className="mt-1 text-sm font-semibold text-ink-100">What moves the goal forward?</p></div><span className="rounded-full bg-emerald-300/10 px-2.5 py-1 text-[10px] font-semibold text-emerald-200">ON TRACK</span></div>
+      <div className="mt-5 rounded-2xl border border-cyan-300/15 bg-cyan-300/[.045] p-5"><p className="text-[11px] font-semibold uppercase tracking-wider text-cyan-200/70">NEXT BEST ACTION</p><p className="mt-2 text-lg font-semibold leading-7 text-ink-100">Finish the Spring Boot validation task.</p><p className="mt-2 text-xs leading-5 text-ink-500">It closes the current milestone and unlocks the next backend task.</p><div className="mt-4 flex gap-2"><span className="h-1.5 flex-1 rounded-full bg-cyan-300"/><span className="h-1.5 flex-1 rounded-full bg-cyan-300/40"/><span className="h-1.5 flex-1 rounded-full bg-base-700"/><span className="h-1.5 flex-1 rounded-full bg-base-700"/></div></div>
+      <div className="mt-4 grid grid-cols-3 gap-2"><Stat label="Tasks" value="12/18"/><Stat label="Rhythm" value="4 days"/><Stat label="Focus" value="Backend"/></div>
+      <div className="mt-4 rounded-2xl border border-base-700 bg-base-950/60 p-4"><div className="flex items-center justify-between"><p className="text-xs font-semibold text-ink-200">Your coach</p><span className="text-[10px] text-ink-700">goal-aware</span></div><p className="mt-2 text-sm leading-6 text-ink-400">“Keep today's task small. You are one step away from closing this milestone.”</p></div>
+    </div>
+  </div>
+}
+function Stat({label,value}:{label:string;value:string}){return <div className="rounded-xl border border-base-700 bg-base-950/60 p-3"><p className="text-[10px] uppercase tracking-wider text-ink-700">{label}</p><p className="mt-1 text-sm font-semibold text-ink-100">{value}</p></div>}

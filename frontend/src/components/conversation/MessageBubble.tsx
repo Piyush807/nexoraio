@@ -11,7 +11,7 @@ export function MessageBubble({ message, pending }: { message: MessageResponse; 
           className={cn(
             'whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
             isUser
-              ? 'bg-signal-violet text-white rounded-br-sm'
+              ? 'bg-cyan-200 text-white rounded-br-sm'
               : 'bg-base-800 text-ink-100 border border-base-700 rounded-bl-sm',
             pending && 'opacity-60',
           )}

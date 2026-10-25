@@ -15,12 +15,12 @@ interface FieldWrapperProps {
 }
 
 const baseFieldClass =
-  'w-full rounded-lg bg-base-900 border border-base-600 px-3.5 py-2.5 text-sm text-ink-100 placeholder:text-ink-700 outline-none transition-colors focus:border-signal-violet disabled:opacity-50'
+  'w-full min-h-11 rounded-xl border border-base-600 bg-base-900/85 px-3.5 py-2.5 text-sm text-ink-100 placeholder:text-ink-700 outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-cyan-300/60 focus:bg-base-800/90 focus:ring-4 focus:ring-cyan-300/10 disabled:cursor-not-allowed disabled:opacity-50'
 
 export const Field = ({ label, error, hint, id, children }: FieldWrapperProps & { children: ReactNode }) => (
   <div className="flex flex-col gap-1.5">
     {label && (
-      <label htmlFor={id} className="text-xs font-medium tracking-wide text-ink-300 uppercase font-mono">
+      <label htmlFor={id} className="text-[11px] font-semibold tracking-[0.08em] text-ink-400">
         {label}
       </label>
     )}

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_progress_task_goal_milestone_task", columnNames = {"goal_id", "milestoneTitle", "taskTitle"}))
 @Data
 @Builder
 @NoArgsConstructor

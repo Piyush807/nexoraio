@@ -49,22 +49,22 @@ public class OllamaClient implements AIClient {
 
         try {
 
+            if (response == null || response.getResponse() == null || response.getResponse().isBlank()) {
+                throw new AIServiceException("AI returned an empty response.");
+            }
             String rawResponse = response.getResponse();
 
             if (responseType.equals(String.class)) {
-                return responseType.cast(extractJson(rawResponse));
+                // Daily coach prompts request plain text, but small local models
+                // occasionally still return the chat JSON envelope. Never leak
+                // that transport envelope into the UI.
+                return responseType.cast(extractPlainText(rawResponse));
             }
 
             String jsonResponse = extractJson(rawResponse);
 
             if (responseType.equals(ChatResponse.class)) {
-                try {
-                    return responseType.cast(objectMapper.readValue(jsonResponse, responseType));
-                } catch (Exception ignored) {
-                    return responseType.cast(ChatResponse.builder()
-                            .reply(extractPlainText(rawResponse))
-                            .build());
-                }
+                return responseType.cast(parseChatResponse(rawResponse, jsonResponse));
             }
 
             return objectMapper.readValue(
@@ -107,19 +107,51 @@ public class OllamaClient implements AIClient {
         return trimmed;
     }
 
-    private String extractPlainText(String rawResponse) {
-        String cleaned = extractJson(rawResponse);
+    private ChatResponse parseChatResponse(String rawResponse, String jsonResponse) {
+        try {
+            return objectMapper.readValue(jsonResponse, ChatResponse.class);
+        } catch (Exception ignored) {
+            String reply = extractReplyField(rawResponse);
+            if (!reply.isBlank()) {
+                return ChatResponse.builder().reply(reply).build();
+            }
+            return ChatResponse.builder().reply(rawResponse.trim()).build();
+        }
+    }
 
-        if (cleaned.startsWith("{") && cleaned.contains("\"reply\"")) {
-            int colonIndex = cleaned.indexOf(':');
-            if (colonIndex >= 0) {
-                String value = cleaned.substring(colonIndex + 1).trim();
-                if (value.startsWith("\"") && value.endsWith("\"")) {
-                    return value.substring(1, value.length() - 1);
-                }
+    private String extractPlainText(String rawResponse) {
+        String reply = extractReplyField(rawResponse);
+        return reply.isBlank() ? rawResponse.trim() : reply;
+    }
+
+    private String extractReplyField(String rawResponse) {
+        if (rawResponse == null || rawResponse.isBlank()) return "";
+
+        // First use Jackson's tree parser for valid JSON, including escaped
+        // characters and multiline replies.
+        try {
+            var node = objectMapper.readTree(extractJson(rawResponse));
+            if (node != null && node.isObject() && node.get("reply") != null) {
+                return node.get("reply").asText("").trim();
+            }
+        } catch (Exception ignored) {
+            // Fall through for the common small-model variant: {reply: "..."}
+        }
+
+        // Tolerate an unquoted JSON key emitted by a small local model.
+        java.util.regex.Matcher matcher = java.util.regex.Pattern
+                .compile("(?s)(?:\\\"reply\\\"|reply)\\s*:\\s*\\\"((?:\\\\.|[^\\\"\\\\])*)\\\"")
+                .matcher(rawResponse);
+        if (matcher.find()) {
+            String value = matcher.group(1);
+            try {
+                return objectMapper.readValue("\"" + value + "\"", String.class).trim();
+            } catch (Exception ignored) {
+                return value.trim();
             }
         }
 
-        return cleaned;
+        return "";
     }
+
 }
